@@ -1,14 +1,28 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
+    <app-nav></app-nav>
     <router-view/>
+    <footer>Victor Lajara</footer>
   </div>
 </template>
 
+<script>
+import AppNav from "./components/AppNav.vue";
+export default ({
+  
+  created(){
+    this.$store.dispatch('loadEmpresas')
+  },
+  components: {
+    AppNav,
+  }
+})
+</script>
+
+
 <style>
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css");
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
