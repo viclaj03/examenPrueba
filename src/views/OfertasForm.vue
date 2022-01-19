@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Nueva oferta</h1>
+    <h1>{{ifEdit? "Editar oferta":"Añadir oferta"}}</h1>
     <ValidationObserver  v-slot="{ handleSubmit }">
     <form id="formOfert" novalidate @submit.prevent="handleSubmit(addOfert)">
 
@@ -127,7 +127,7 @@ export default {
   data() {
     return {
       ofermForm: {},
-      ifEdit: false,
+      ifEdit: false
     };
   },
   props: ["id"],
@@ -169,17 +169,22 @@ export default {
         ).contacto;
       }
     },
+    
   },
   watch: {
     $route() {
-      this.refreshForm();
+      this.$nexttick(this.refreshForm())
     },
-  },
 
+    
+  },
   computed: {
     empresas() {
       return this.$store.state.empresas;
     },
+
+   
+
   },
 
   mounted() {
@@ -189,6 +194,7 @@ export default {
         .getOne(this.id)
         .then((response) => (this.ofermForm = response.data))
         .catch((error) => alert(error));
+
     }
   },
 };
