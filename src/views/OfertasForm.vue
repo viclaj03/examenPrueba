@@ -1,20 +1,28 @@
 <template>
   <div>
     <h1>Nueva oferta</h1>
-    <form id="formOfert">
+    <ValidationObserver  v-slot="{ handleSubmit }">
+    <form id="formOfert" novalidate @submit.prevent="handleSubmit(addOfert)">
+
       <div class="form-group">
         <label for="newprod-name">Nombre:</label>
+
+        <validation-provider rules="required|min:5|max:50" v-slot="{ errors }" >
         <input
           type="text"
           class="form-control"
           id="newprod-name"
-          required
           v-model="ofermForm.nombre"
         />
+        <span class="text-danger">{{errors[0]}}</span>
+        </validation-provider>
+
       </div>
+
 
       <div class="form-group">
         <label for="newprod-name">Contrato:</label>
+        <validation-provider rules="required" v-slot="{ errors }" >
         <input
           type="text"
           class="form-control"
@@ -22,8 +30,13 @@
           required
           v-model="ofermForm.contrato"
         />
+        <span class="text-danger">{{errors[0]}}</span>
+        </validation-provider>
+
       </div>
       <div class="form-group">
+        <validation-provider rules="required" v-slot="{ errors }" >
+
         <label for="newprod-name">Contacto</label>
         <input
           type="text"
@@ -32,9 +45,12 @@
           required
           v-model="ofermForm.contacto"
         />
+        <span class="text-danger">{{errors[0]}}</span>
+        </validation-provider>
       </div>
       <div class="form-group">
         <label for="newprod-name">email:</label>
+        <validation-provider rules="required|email" v-slot="{ errors }" >
         <input
           type="email"
           class="form-control"
@@ -42,12 +58,16 @@
           required
           v-model="ofermForm.email"
         />
+         <span class="text-danger">{{errors[0]}}</span>
+        </validation-provider>
       </div>
       <div class="form-group">
         <label for="newprod-name">Empresa:</label>
-        <select v-model="ofermForm.empresa">
+        <validation-provider rules="required" v-slot="{ errors }" >
+        <select v-model="ofermForm.empresa"  @change="rejenarDatos">
+          <option value="">--Seleciona una empresa</option>
           <option
-            @click.prevent="rejenarDatos"
+           
             v-for="empresa in empresas"
             :key="empresa.id"
             :value="empresa.id"
@@ -55,17 +75,20 @@
             {{ empresa.nombre }}
           </option>
         </select>
+        <span class="text-danger">{{errors[0]}}</span>
+        </validation-provider>
       </div>
 
       <br />
       <button
         id="boton"
         type="submit"
-        class="btn btn-default btn-primary"
-        v-on:click.prevent="addOfert"
+        class="btn btn-default btn-primary"  
       >
         Añadir
       </button>
+
+
       <button
         id="boton"
         type="reset"
@@ -75,13 +98,32 @@
         Cancelar
       </button>
     </form>
+    </ValidationObserver>
+
   </div>
 </template>
 
 <script>
 import api from "../api";
 
+import { ValidationProvider,ValidationObserver } from 'vee-validate';
+// Ahora importamos las reglas que queramos usar, en este caso 'required'
+import { extend } from 'vee-validate';
+import { required,min,max,email } from 'vee-validate/dist/rules';
+import es from 'vee-validate/dist/locale/es.json';
+import { localize } from 'vee-validate';
+
+localize('es',es)
+
+extend('required',{...required, message: 'El campo es obligatorio'});
+extend('min',{...min,message: `el {_field_} debe tener minimo: {length} `  })
+extend('max',max)
+extend('email',{...email,message: 'Debes introduicir un correo valido'})
 export default {
+  components:{
+    ValidationProvider,
+    ValidationObserver
+  },
   data() {
     return {
       ofermForm: {},
